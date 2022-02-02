@@ -1,0 +1,1 @@
+SELECT trip_id, direction_id, route_id, route_short_name, route_type, shape_id, first_stop_id, first_stop_name, first_departure, last_stop_id, last_stop_name, last_arrival, number_of_stations, dist_traveled FROM trips NATURAL JOIN routes NATURAL JOIN trip_terminals WHERE trip_id = $1

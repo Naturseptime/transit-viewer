@@ -1,0 +1,98 @@
+.route {
+  font-family: Helvetica;
+  font-weight: bold;
+  font-size: 80%;
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  margin: 0.1em;
+  padding: 0.15em 0.4em;
+  min-width: 2em;
+}
+
+.generic {
+  color: white;
+  background-color: darkgray;
+}
+
+.tram {
+  color: white;
+  background-color: red;
+}
+
+.subway {
+  color: white;
+  background-color: darkblue;
+}
+
+.suburban {
+  border-radius: 0.5em;
+  color: white;
+  background-color: darkgreen;
+}
+
+.regional {
+  border-radius: 0.0em;
+  color: white;
+  background-color: darkgray;
+}
+
+.intercity {
+  border-radius: 0.0em;
+  border: 2px red solid;
+  color: red;
+  background-color: white;
+}
+
+.bus {
+  border-radius: 0.2em;
+  color: white;
+  background-color: purple;
+}
+
+.link {
+  cursor: pointer
+}
+
+.link:hover {
+  background-color: #eea;
+}
+
+.departures_table {
+  border-collapse: collapse;
+  border-spacing: 0px;"
+  margin: 1em;
+}
+
+.departures_table td {
+  padding: 0.1em;
+  padding-right: 1em;
+  vertical-align: middle;
+}
+
+
+/* Trips departing from a stop  */
+.stop_info h1 {
+  font-size: 100%;
+}
+
+.departure_minutes {
+  columns: 2 10em;
+  list-style-type: none;
+  padding-left: 0px;
+  margin: 1em;
+}
+
+.departure_minutes li {
+  display: flex;
+  flex-flow: row;
+  overflow: hidden;
+}
+
+.departure_minutes .trip_hour {
+  min-width: 2em;
+}
+
+.departure_minutes .trip_minute {
+  color: #666;
+}

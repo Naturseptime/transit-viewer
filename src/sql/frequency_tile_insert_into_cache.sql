@@ -1,0 +1,1 @@
+INSERT INTO frequency_tile_cache (date, z, x, y, tile, last_hit) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP);

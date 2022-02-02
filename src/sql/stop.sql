@@ -1,0 +1,1 @@
+SELECT stop_id, stop_name, stop_lon, stop_lat, platform_code FROM stops WHERE stop_id = $1

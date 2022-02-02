@@ -1,0 +1,1 @@
+SELECT tile FROM frequency_tile_cache WHERE date = $1 AND z = $2 AND x = $3 AND y = $4

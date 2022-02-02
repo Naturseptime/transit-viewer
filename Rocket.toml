@@ -1,0 +1,2 @@
+[default.databases.gtfs_data]
+url = "postgresql://transitviewer:mypassword@localhost/transitviewer"

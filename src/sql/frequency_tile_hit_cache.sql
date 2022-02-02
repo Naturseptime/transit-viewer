@@ -1,0 +1,1 @@
+UPDATE frequency_tile_cache SET last_hit = CURRENT_TIMESTAMP WHERE date = $1 AND z = $2 AND x = $3 AND y = $4
