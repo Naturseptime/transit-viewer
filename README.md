@@ -9,6 +9,11 @@ Current features:
 
 transit-viewer is written in Rust and Javascript. It uses Postgres/Postgis as database, Rocket as REST-API and Leaflet for the slippy map.
 
+![screenshot-munich](https://user-images.githubusercontent.com/24992664/152240586-e9623475-9def-4989-b8e5-f4347d21393b.png)
+![screenshot-departures](https://user-images.githubusercontent.com/24992664/152240584-c3154fa7-c7dc-4022-ad75-224d61f5658b.png)
+![screenshot-nl](https://user-images.githubusercontent.com/24992664/152240588-070352ae-9ef5-4975-8666-b09fb6d0e26f.png)
+![screenshot-trip](https://user-images.githubusercontent.com/24992664/152240594-8053698b-ef52-4e54-80ca-6d7c8273fab6.png)
+
 ## Setup 
 
 Install postgresql and the postgis extension.
