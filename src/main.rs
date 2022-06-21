@@ -87,7 +87,7 @@ async fn stop_information(
     feed: String,
     date: String,
     stop_id: u32
-) -> content::Html<String> {
+) -> content::RawHtml<String> {
     db.run(move |conn| {
         set_db_schema(conn, &feed);
 
@@ -118,7 +118,7 @@ async fn stop_information(
 
         println!("Time elapsed in stop_information() is: {:?}", duration);
 
-        content::Html(stop_html(&stop, &stop_times).into_string())
+        content::RawHtml(stop_html(&stop, &stop_times).into_string())
     })
     .await
 }
