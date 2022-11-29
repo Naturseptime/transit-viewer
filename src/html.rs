@@ -60,7 +60,7 @@ fn departure_minutes(stop_times: &Vec<&StopTimesExtra>) -> Markup {
     let stop_times_by_hour: HashMap<(NaiveDate, u32), Vec<&StopTimesExtra>> =
         stop_times.into_iter().cloned().into_group_map_by(|st| {
             let d = st.stop_time.departure_time;
-            (d.date().naive_local(), d.time().hour())
+            (d.date_naive(), d.time().hour())
         });
     let mut ordered_by_hour: Vec<((NaiveDate, u32), Vec<&StopTimesExtra>)> =
         stop_times_by_hour.into_iter().collect();
