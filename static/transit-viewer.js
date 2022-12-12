@@ -1,3 +1,19 @@
+// ***** Config *****
+
+const frequencyStyles = [
+  {minfreq: 256, style: {color: "#000000", opacity: 0.5}}, // < 5min
+  {minfreq: 192, style: {color: "#000055", opacity: 0.5}}, // 5min
+  {minfreq: 128, style: {color: "#0000AA", opacity: 0.5}}, // 7.5min
+  {minfreq: 96,  style: {color: "#0827FF", opacity: 0.5}}, // 10min
+  {minfreq: 64,  style: {color: "#115588", opacity: 0.4}}, // 15min
+  {minfreq: 48,  style: {color: "#188855", opacity: 0.4}}, // 20min
+  {minfreq: 32,  style: {color: "#22BB22", opacity: 0.4}}, // 30min
+  {minfreq: 24,  style: {color: "#88DD11", opacity: 0.3}}, // 45min
+  {minfreq: 16,  style: {color: "#EEEE11", opacity: 0.3}}, // 1h
+  {minfreq: 8,   style: {color: "#EE8811", opacity: 0.2}}, // 2h
+  {minfreq: 1,   style: {color: "#FF0000", opacity: 0.1}} // > 2h
+];
+
 const urlParams = new URLSearchParams(window.location.search);
 var feed = urlParams.get('feed')
 var date = urlParams.get('date') || new Date().toISOString().slice(0, 10);
@@ -17,9 +33,20 @@ var stationPopupOptions = {minWidth: 300, minHeight: 100, maxHeight: 300};
 
 var stopsLayer = L.layerGroup([]);
 var frequencyLayer = L.layerGroup([]);
+frequencyLayer.on("add", function() {
+  addFrequencyLegend()
+});
+
+frequencyLayer.on("remove", function() {
+  if(frequencyLayerLegend)
+    map.removeControl(frequencyLayerLegend);
+});
+
 map.addLayer(stopsLayer);
 map.addLayer(frequencyLayer);
 addLayerSelection();
+
+var frequencyLayerLegend = null;
 
 function reloadAll() {
   tripSidebar.hide();
@@ -45,7 +72,7 @@ function fitView(stopMarkers) {
 function reloadStops() {
   stopMarkers = {};
   stopsLayer.clearLayers();
-  
+
   var pruneCluster = new PruneClusterForLeaflet(120, 20);
 
   pruneCluster.PrepareLeafletMarker = function (marker, data, category) {
@@ -55,9 +82,9 @@ function reloadStops() {
       marker.on('popupopen', function() {
         loadStopInformation(marker.getPopup(), data.properties.stop_id);});
     }
-  };  
-      
-  $.ajax({url: "/" + encodeURIComponent(feed) + "/stops"}).done(function(geojsonData) {  
+  };
+
+  $.ajax({url: "/" + encodeURIComponent(feed) + "/stops"}).done(function(geojsonData) {
     L.geoJSON(geojsonData, {
       pointToLayer: function(feature, latLng) {
         var marker = new PruneCluster.Marker(latLng.lat, latLng.lng);
@@ -67,11 +94,11 @@ function reloadStops() {
       }
     });
     pruneCluster.ProcessView();
-    
+
     //~ var bounds = pruneCluster.Cluster.ComputeGlobalBounds();
     //~ map.fitBounds(L.latLngBounds(L.latLng(bounds.minLat, bounds.minLng), L.latLng(bounds.maxLat, bounds.maxLng)));
     fitView(stopMarkers);
-    
+
     stopsLayer.addLayer(pruneCluster);
     map.spin(false);
   });
@@ -87,7 +114,7 @@ function loadStopInformation(popup, stop_id) {
 
 // ***** Trips layer *****
 
-var tripLayer = null;  
+var tripLayer = null;
 
 function onTripLoaded(data) {
   tripLayer = L.geoJson.vt(data, {
@@ -97,11 +124,11 @@ function onTripLoaded(data) {
       return {weight: 8, color: "#FF0000", opacity: 0.7};
     },
   });
-  
+
   tripSidebar.setContent(data.features[0].properties.trip_info);
   tripSidebar.show();
 
-  map.addLayer(tripLayer);  
+  map.addLayer(tripLayer);
 }
 
 function jumpToStopAndShowInfo(stop_id) {
@@ -126,8 +153,8 @@ function showTrip(trip_id) {
   if(map) map.closePopup();
 
   $.ajax({url: "/" + encodeURIComponent(feed) + "/" + encodeURIComponent(date) + "/trips/" + encodeURIComponent(trip_id)}).done(onTripLoaded);
-}  
-  
+}
+
 var tripSidebar = L.control.sidebar('trip-sidebar', {
   closeButton: true,
   position: 'right'
@@ -140,28 +167,12 @@ tripSidebar.on('hidden', function () {
 // ***** Frequency layer *****
 
 function styleForTripFrequency(t) {
-  if(t >= 256)
-    return {color: "#000000", opacity: 0.5}; // < 5min
-  else if(t >= 192)
-    return {color: "#000055", opacity: 0.5}; // 5min
-  else if(t >= 128)
-    return {color: "#0000AA", opacity: 0.5}; // 7.5min
-  else if(t >= 96)
-    return {color: "#0827FF", opacity: 0.5}; // 10min
-  else if(t >= 64)
-    return {color: "#115588", opacity: 0.4}; // 15min
-  else if(t >= 48)
-    return {color: "#188855", opacity: 0.4}; // 20min
-  else if(t >= 32)
-    return {color: "#22BB22", opacity: 0.4}; // 30min
-  else if(t >= 24)
-    return {color: "#88DD11", opacity: 0.3}; // 45min
-  else if(t >= 16)
-    return {color: "#EEEE11", opacity: 0.3}; // 1h
-  else if(t >= 8)
-    return {color: "#EE8811", opacity: 0.2}; // 2h
-  else
-    return {color: "#FF0000", opacity: 0.1}; // > 2h
+  for (entry of frequencyStyles) {
+    if(t >= entry.minfreq) {
+      return entry.style;
+    }
+  }
+  return null;
 };
 
 var geojsonVTLayer = null;
@@ -184,9 +195,9 @@ function reloadSegments() {
         return s;
       }
     }
-    
+
   });
-  
+
   frequencyLayer.clearLayers();
   frequencyLayer.addLayer(geojsonVTLayer);
 }
@@ -209,6 +220,41 @@ function addLayerSelection() {
     "Show all stops": stopsLayer,
     "Show frequencies": frequencyLayer};
   L.control.layers(baseMaps, overlayMaps, {position: 'topright'}).addTo(map);
+}
+
+function addFrequencyLegend() {
+  var legend = document.createElement('div');
+  legend.style.padding = '1em';
+
+  var legendTitle = document.createElement('b');
+  legendTitle.innerText = "Trips per day";
+  legend.appendChild(legendTitle);
+
+  var lastFreq = null;
+
+  for (entry of frequencyStyles) {
+    var listItem = document.createElement('div');
+    var line = document.createElement('span');
+    line.style.display = "inline-block";
+    line.style.backgroundColor = entry.style.color;
+    line.style.width = "3em";
+    line.style.height = "0.25em";
+    line.style.verticalAlign = "middle";
+    listItem.appendChild(line);
+
+    var text = lastFreq == null ? " ≥ " + entry.minfreq :
+      " " + entry.minfreq + " - " + (lastFreq - 1);
+    var label = document.createTextNode(text);
+    lastFreq = entry.minfreq;
+    listItem.appendChild(label);
+
+    legend.appendChild(listItem);
+  }
+
+  frequencyLayerLegend = L.control.custom({
+    position: 'topright',
+    content: legend.outerHTML,
+    classes: 'leaflet-control-layers'}).addTo(map);
 }
 
 // ***** UI controls *****
@@ -253,7 +299,7 @@ function onFeedListLoaded(data) {
       option.setAttribute('selected', 'selected');
     select.appendChild(option);});
   select.setAttribute('onchange', "onChangeFeed(this.value)");
-  
+
   updateAttribution();
 
   var date_input = document.createElement('input');
@@ -261,10 +307,10 @@ function onFeedListLoaded(data) {
   date_input.name = date_input.id = 'date-select';
   date_input.setAttribute('value', date);
   date_input.setAttribute('onchange', "onChangeDate(this.value)");
-  
+
   html = "<div style='margin: 0.5em'><label>Select feed:<br>" + select.outerHTML + "</label>" +
     "<label>Select date:<br>" + date_input.outerHTML + "</label></div>";
-  
+
   L.control.custom({
     position: 'bottomright',
     content : html,
